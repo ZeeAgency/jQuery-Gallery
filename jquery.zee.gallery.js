@@ -92,7 +92,7 @@
 				$controls = $gallery.find(params.controlsSelector),
 				isVertical = $gallery.hasClass('vertical'),
 				
-				thumbSize = $thumbs.filter(':first-child')[isVertical ? 'outerHeight' : 'outerWidth'](true),
+				thumbSize = $thumbs.filter(':last-child')[isVertical ? 'outerHeight' : 'outerWidth'](true),
 				stepLength = Math.ceil($thumbsContainer[isVertical ? 'height' : 'width']() / thumbSize),
 				
 				slide = function(slideId) {
@@ -129,18 +129,23 @@
 			
 			// Thumbs click
 			$thumbs.find('a').click(function(e) {
-				e.preventDefault();
 				
-				var $thumb = $(this).parent().activate(),
-					thumbId = $thumb.prevAll().length+1;
+				// Slideshow detect
+				if($gallery.find(params.slideshowSelector).length) {
+					e.preventDefault();
+					
+					var $thumb = $(this).parent().activate(),
+						thumbId = $thumb.prevAll().length+1;
+					
+					// Slideshow Exchange
+					$gallery.find(params.slideshowSelector)
+							.trigger(params.slideEventName, thumbId);
+				}
 				
-				// Slideshow Exchange
-				$gallery.find(params.slideshowSelector)
-						.trigger(params.slideEventName, thumbId);
-				
-				$gallery.trigger(params.thumbClickEvent, thumbId);
-				
+				$gallery.trigger(params.thumbClickEvent, e, thumbId);
+
 			});
+			
 		});
 	};
 })(jQuery);
